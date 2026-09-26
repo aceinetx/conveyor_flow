@@ -1,12 +1,15 @@
 const rl = @import("raylib");
 const util = @import("util.zig");
 const std = @import("std");
+const config = @import("config.zig");
 const Map = @import("Map.zig");
 const Textures = @import("Textures.zig");
 
 pub fn main(init: std.process.Init) void {
     rl.initWindow(1280, 720, "Conveyor flow");
     defer rl.closeWindow();
+
+    var tick_timer: f32 = config.one_tick_in_seconds;
 
     var textures = Textures.init();
     defer textures.deinit();
@@ -20,6 +23,7 @@ pub fn main(init: std.process.Init) void {
     map.set(.init(2, 1), .{ .conveyor = .{ .direction = .left } });
     map.set(.init(0, 1), .{ .conveyor = .{ .direction = .up } });
     map.set(.init(1, 1), .{ .conveyor = .{ .direction = .left } });
+    map.set(.init(5, 5), .{ .generator = .{} });
 
     var camera = rl.Camera2D{
         .target = .zero(),
@@ -55,5 +59,13 @@ pub fn main(init: std.process.Init) void {
         // Zooming
         const mouse_wheel_move = rl.getMouseWheelMoveV();
         camera.zoom += 0.1 * mouse_wheel_move.y;
+
+        // ----------------------------------------------------------
+
+        tick_timer -= rl.getFrameTime();
+        if (tick_timer <= 0) {
+            map.tick();
+            tick_timer = config.one_tick_in_seconds;
+        }
     }
 }

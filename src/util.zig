@@ -8,16 +8,15 @@ pub fn getScreenSize() rl.Vector2 {
     };
 }
 
-pub inline fn createPlaceholderTexture() rl.Texture {
+pub inline fn createPlaceholderTexture() rl.Texture2D {
     const image = rl.genImageChecked(32, 32, 16, 16, .black, .purple);
     const texture = rl.loadTextureFromImage(image) catch unreachable;
     rl.unloadImage(image);
     return texture;
 }
 
-pub inline fn loadTextureFromImageInMemory(data: []const u8) rl.Texture {
-    _ = data;
-    const image = rl.loadImageFromMemory(".png", &[_]u8{}) catch {
+pub inline fn loadTextureFromImageInMemory(data: []const u8) rl.Texture2D {
+    const image = rl.loadImageFromMemory(".png", data) catch {
         std.log.err("[loadTextureFromImageInMemory] Image load failed, using placeholder texture", .{});
         return createPlaceholderTexture();
     };

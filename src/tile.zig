@@ -1,6 +1,7 @@
 const rl = @import("raylib");
 const Vector2i = @import("Vector2i.zig");
 const Textures = @import("Textures.zig");
+const config = @import("config.zig");
 
 pub const Tile = union(enum) {
     pub const ConveyorDirection = enum {
@@ -14,6 +15,19 @@ pub const Tile = union(enum) {
     conveyor: struct {
         direction: ConveyorDirection,
     },
+    generator: struct {
+        cooldown: f32 = 1.0,
+    },
+
+    pub fn tick(self: *Tile, position: Vector2i) void {
+        _ = position;
+        switch (self.*) {
+            .generator => {
+                self.generator.cooldown -= config.one_tick_in_seconds;
+            },
+            else => {},
+        }
+    }
 
     pub fn draw(self: Tile, position: Vector2i, textures: *Textures) void {
         switch (self) {
@@ -48,6 +62,17 @@ pub const Tile = union(enum) {
                     rotation,
                     .white,
                 );
+            },
+            .generator => |generator| {
+                const pos = rl.Vector2.init(
+                    @floatFromInt(position.x * 32),
+                    @floatFromInt(position.y * 32),
+                );
+
+                rl.drawTextureV(textures.placeholder, pos, .white);
+
+                const text = rl.textFormat("%.2f", .{generator.cooldown});
+                rl.drawText(text, @intFromFloat(pos.x), @intFromFloat(pos.y), 5, .white);
             },
         }
     }

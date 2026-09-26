@@ -38,3 +38,10 @@ pub fn draw(self: Self, textures: *Textures) void {
         tile.value_ptr.draw(tile.key_ptr.*, textures);
     }
 }
+
+pub fn tick(self: *Self) void {
+    var it = self.tiles.iterator();
+    while (it.next()) |tile| {
+        tile.value_ptr.tick(tile.key_ptr.*);
+    }
+}
