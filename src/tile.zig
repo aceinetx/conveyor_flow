@@ -27,16 +27,27 @@ pub const Tile = union(enum) {
                 };
                 rec.x *= rec.width;
                 rec.y *= rec.height;
-                //rl.drawRectangleRec(rec, .black);
-                rl.drawTexture(textures.conveyor, @intFromFloat(rec.x), @intFromFloat(rec.y), .white);
 
-                const text = switch (conveyor.direction) {
-                    .up => "up",
-                    .down => "down",
-                    .left => "left",
-                    .right => "right",
+                const rotation: f32 = switch (conveyor.direction) {
+                    .up => -90,
+                    .down => 90,
+                    .left => 180,
+                    .right => 0,
                 };
-                rl.drawText(text, @intFromFloat(rec.x), @intFromFloat(rec.y), 5, .purple);
+
+                rl.drawTexturePro(
+                    textures.conveyor,
+                    .{
+                        .x = 0,
+                        .y = 0,
+                        .width = 32,
+                        .height = 32,
+                    },
+                    rec,
+                    .init(rec.width / 2, rec.height / 2),
+                    rotation,
+                    .white,
+                );
             },
         }
     }

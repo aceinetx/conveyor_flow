@@ -15,7 +15,11 @@ pub fn main(init: std.process.Init) void {
     defer map.deinit();
 
     map.set(.init(0, 0), .{ .conveyor = .{ .direction = .right } });
-    map.set(.init(1, 0), .{ .conveyor = .{ .direction = .down } });
+    map.set(.init(1, 0), .{ .conveyor = .{ .direction = .right } });
+    map.set(.init(2, 0), .{ .conveyor = .{ .direction = .down } });
+    map.set(.init(2, 1), .{ .conveyor = .{ .direction = .left } });
+    map.set(.init(0, 1), .{ .conveyor = .{ .direction = .up } });
+    map.set(.init(1, 1), .{ .conveyor = .{ .direction = .left } });
 
     var camera = rl.Camera2D{
         .target = .zero(),
