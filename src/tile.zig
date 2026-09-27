@@ -23,15 +23,18 @@ pub const Tile = union(TileTag) {
             left,
             right,
         };
-        pub const base_cooldown = 1.0;
+        base_cooldown: f32 = 1.0,
 
         direction: Direction,
-        cooldown: f32 = base_cooldown,
+
+        cooldown: f32 = 1.0,
     };
 
     stone,
     conveyor: Conveyor,
     miner: extern struct {
+        base_cooldown: f32 = 10.0,
+
         cooldown: f32 = 0.0,
     },
     collector,
@@ -109,13 +112,13 @@ pub const Tile = union(TileTag) {
                                 if (tile.* == .conveyor) {
                                     // Reset the next conveyor's cooldown so that the item
                                     // doesn't move two times in one tick
-                                    tile.conveyor.cooldown = Conveyor.base_cooldown;
+                                    tile.conveyor.cooldown = tile.conveyor.base_cooldown;
                                 }
                             }
                         }
                     }
 
-                    self.conveyor.cooldown = Conveyor.base_cooldown;
+                    self.conveyor.cooldown = self.conveyor.base_cooldown;
                 }
             },
             .miner => {
@@ -169,7 +172,7 @@ pub const Tile = union(TileTag) {
                         }
                     }
 
-                    self.miner.cooldown = 10;
+                    self.miner.cooldown = self.miner.base_cooldown;
                 }
             },
             .collector => {
@@ -245,9 +248,9 @@ pub const Tile = union(TileTag) {
                     .white,
                 );
             },
-            .miner => |generator| {
+            .miner => {
                 rl.drawTexturePro(
-                    textures.placeholder,
+                    textures.miner,
                     .{
                         .x = 0,
                         .y = 0,
@@ -259,13 +262,10 @@ pub const Tile = union(TileTag) {
                     0.0,
                     .white,
                 );
-
-                const text = rl.textFormat("%.2f", .{generator.cooldown});
-                rl.drawText(text, @intFromFloat(rec.x), @intFromFloat(rec.y), 5, .white);
             },
             .collector => {
                 rl.drawTexturePro(
-                    textures.placeholder,
+                    textures.collector,
                     .{
                         .x = 0,
                         .y = 0,
@@ -275,7 +275,7 @@ pub const Tile = union(TileTag) {
                     rec,
                     .zero(),
                     0.0,
-                    .gray,
+                    .white,
                 );
             },
         }

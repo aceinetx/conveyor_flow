@@ -63,6 +63,7 @@ pub fn serialize(self: Self, writer: *std.Io.Writer) !void {
 
 pub fn deserialize(gpa: std.mem.Allocator, reader: *std.Io.Reader) !Self {
     var self = Self.init(gpa);
+    errdefer self.deinit();
 
     const tiles_count = try reader.takeInt(u32, .little);
 

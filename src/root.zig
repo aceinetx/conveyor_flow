@@ -26,11 +26,64 @@ pub fn main(init: std.process.Init) void {
     map.tiles.put(.init(-4, -4), .stone) catch {};
     map.tiles.put(.init(-3, -4), .stone) catch {};
 
+    map.tiles.put(.init(-10, -10), .stone) catch {};
+    map.tiles.put(.init(-9, -10), .stone) catch {};
+    map.tiles.put(.init(-9, -8), .stone) catch {};
+    map.tiles.put(.init(-9, -9), .stone) catch {};
+    map.tiles.put(.init(-8, -9), .stone) catch {};
+    map.tiles.put(.init(-8, -8), .stone) catch {};
+
+    map.tiles.put(.init(5, -6), .stone) catch {};
+    map.tiles.put(.init(5, -5), .stone) catch {};
+    map.tiles.put(.init(3, -5), .stone) catch {};
+    map.tiles.put(.init(4, -5), .stone) catch {};
+    map.tiles.put(.init(5, -4), .stone) catch {};
+    map.tiles.put(.init(3, -4), .stone) catch {};
+
     map.tiles.put(.init(5, 5), .stone) catch {};
     map.tiles.put(.init(4, 5), .stone) catch {};
     map.tiles.put(.init(4, 3), .stone) catch {};
     map.tiles.put(.init(4, 4), .stone) catch {};
     map.tiles.put(.init(3, 4), .stone) catch {};
+
+    map.tiles.put(.init(-4, 0), .stone) catch {};
+    map.tiles.put(.init(-5, 0), .stone) catch {};
+    map.tiles.put(.init(-5, 1), .stone) catch {};
+    map.tiles.put(.init(-3, 1), .stone) catch {};
+    map.tiles.put(.init(-4, 2), .stone) catch {};
+    map.tiles.put(.init(-5, 2), .stone) catch {};
+    map.tiles.put(.init(-6, 2), .stone) catch {};
+    map.tiles.put(.init(-6, 1), .stone) catch {};
+    map.tiles.put(.init(-4, 1), .stone) catch {};
+    map.tiles.put(.init(-3, 2), .stone) catch {};
+    map.tiles.put(.init(-4, 3), .stone) catch {};
+
+    map.tiles.put(.init(0, -7), .stone) catch {};
+    map.tiles.put(.init(1, -7), .stone) catch {};
+    map.tiles.put(.init(1, -8), .stone) catch {};
+    map.tiles.put(.init(-1, -6), .stone) catch {};
+    map.tiles.put(.init(0, -6), .stone) catch {};
+    map.tiles.put(.init(2, -6), .stone) catch {};
+    map.tiles.put(.init(2, -7), .stone) catch {};
+
+    map.tiles.put(.init(-10, -5), .stone) catch {};
+    map.tiles.put(.init(-10, -4), .stone) catch {};
+    map.tiles.put(.init(-11, -4), .stone) catch {};
+    map.tiles.put(.init(-11, -3), .stone) catch {};
+    map.tiles.put(.init(-9, -3), .stone) catch {};
+    map.tiles.put(.init(-9, -2), .stone) catch {};
+    map.tiles.put(.init(-11, -2), .stone) catch {};
+    map.tiles.put(.init(-12, -2), .stone) catch {};
+    map.tiles.put(.init(-12, -3), .stone) catch {};
+    map.tiles.put(.init(-10, -2), .stone) catch {};
+
+    map.tiles.put(.init(6, -1), .stone) catch {};
+    map.tiles.put(.init(6, 0), .stone) catch {};
+    map.tiles.put(.init(7, 0), .stone) catch {};
+    map.tiles.put(.init(7, 1), .stone) catch {};
+    map.tiles.put(.init(5, 0), .stone) catch {};
+    map.tiles.put(.init(7, -2), .stone) catch {};
+    map.tiles.put(.init(7, -1), .stone) catch {};
 
     // ----------------------------------------------------------
 
@@ -85,6 +138,8 @@ pub fn main(init: std.process.Init) void {
 
         // Camera movement
         if (rl.isKeyPressed(.one)) {
+            std.log.debug("map.tiles.put(.init({}, {}), .stone) catch {{}};", .{ mouse_pos_grid.x, mouse_pos_grid.y });
+
             map.tiles.put(
                 mouse_pos_grid,
                 .{
