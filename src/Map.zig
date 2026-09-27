@@ -45,3 +45,36 @@ pub fn tick(self: *Self) void {
         tile.value_ptr.tick(self, tile.key_ptr.*);
     }
 }
+
+pub fn serialize(self: Self, writer: *std.Io.Writer) !void {
+    try writer.writeInt(u32, self.tiles.count(), .little);
+
+    {
+        var it = self.tiles.iterator();
+        while (it.next()) |tile| {
+            try writer.writeInt(i64, tile.key_ptr.x, .little);
+            try writer.writeInt(i64, tile.key_ptr.y, .little);
+            try tile.value_ptr.serialize(writer);
+        }
+    }
+
+    try writer.flush();
+}
+
+pub fn deserialize(gpa: std.mem.Allocator, reader: *std.Io.Reader) !Self {
+    var self = Self.init(gpa);
+
+    const tiles_count = try reader.takeInt(u32, .little);
+
+    for (0..tiles_count) |_| {
+        const pos = blk: {
+            const x = try reader.takeInt(i64, .little);
+            const y = try reader.takeInt(i64, .little);
+            break :blk Vector2i.init(x, y);
+        };
+        const tile = try Tile.deserialize(reader);
+        try self.tiles.put(pos, tile);
+    }
+
+    return self;
+}

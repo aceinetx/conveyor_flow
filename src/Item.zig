@@ -7,14 +7,14 @@ const Self = @This();
 count: u8 = 1,
 
 kind: union(enum) {
-    testing,
+    stone,
 },
 
 pub fn draw(self: Self, position: Vector2i, textures: *Textures) void {
     switch (self.kind) {
-        .testing => {
+        .stone => {
             rl.drawTexture(
-                textures.placeholder,
+                textures.stone_item,
                 @intCast(position.x * 32),
                 @intCast(position.y * 32),
                 .white,

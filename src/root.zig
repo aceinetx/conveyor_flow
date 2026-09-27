@@ -116,6 +116,32 @@ pub fn main(init: std.process.Init) void {
             );
         }
 
+        if (rl.isKeyPressed(.s)) {
+            const file = std.Io.Dir.cwd().createFile(init.io, "map.cf", .{}) catch unreachable;
+            defer file.close(init.io);
+
+            var buffer: [2048]u8 = undefined;
+            var writer = file.writer(init.io, &buffer);
+
+            map.serialize(&writer.interface) catch |e|
+                std.log.err("Failed to serialize: {}", .{e});
+        }
+
+        if (rl.isKeyPressed(.l)) {
+            const file = std.Io.Dir.cwd().openFile(init.io, "map.cf", .{}) catch unreachable;
+            defer file.close(init.io);
+
+            var buffer: [2048]u8 = undefined;
+            var reader = file.reader(init.io, &buffer);
+
+            if (Map.deserialize(init.gpa, &reader.interface)) |new_map| {
+                map.deinit();
+                map = new_map;
+            } else |e| {
+                std.log.err("Failed to deserialize: {}", .{e});
+            }
+        }
+
         // Zooming
         const mouse_wheel_move = rl.getMouseWheelMoveV();
         camera.zoom += 0.1 * mouse_wheel_move.y;
