@@ -76,7 +76,7 @@ pub const Tile = union(TileType) {
 
     // ----------------------------------------------------------
 
-    fn acceptItem(self: *Self, item: Item) bool {
+    pub fn acceptItem(self: *Self, item: Item) bool {
         switch (self.*) {
             .conveyor => {
                 if (self.conveyor.item == null) {
@@ -97,40 +97,27 @@ pub const Tile = union(TileType) {
     // ----------------------------------------------------------
 
     pub fn tick(self: *Self, map: *Map, position: Vector2i) void {
+        inline for (comptime std.meta.fieldNames(Self)) |field| {
+            const ti = @typeInfo(@FieldType(Self, field));
+            if (ti == .@"struct") {
+                const decls = ti.@"struct".decls;
+                if (!util.declsContainShit(decls, "tick")) {
+                    const x = .{ ti, " must implement tick" };
+                    @compileError(x);
+                }
+
+                // pub fn tick(self: *Self, super: *Tile, map: *Map, position: Vector2i) void
+                //@compileLog(ti.@"struct".decls);
+            }
+            if (self.* == @field(Self, field)) {
+                std.log.debug("{s}", .{field});
+            }
+        }
+
         switch (self.*) {
             .stone => {},
             .conveyor => {
-                if (self.conveyor.item) |item| {
-                    self.conveyor.move_progress += 0.5 * config.one_tick_in_seconds;
-
-                    if (self.conveyor.move_progress >= 1) {
-                        // Transfer the item
-                        const tile_pos = position.add(self.conveyor.direction.toVector2i());
-                        if (map.tiles.getPtr(tile_pos)) |tile| {
-                            const differentMainAxis =
-                                if (tile.* == .conveyor)
-                                    self.conveyor.direction.isVertical() != tile.conveyor.direction.isVertical()
-                                else
-                                    false;
-
-                            // Prevent jitter when moving between different axised conveyors
-                            // Snaps the element in place to the next conveyor
-                            if (differentMainAxis and self.conveyor.move_progress < 1.5 and tile.conveyor.item == null)
-                                return;
-
-                            if (tile.acceptItem(item)) {
-                                self.conveyor.item = null;
-
-                                // Make it so that the element's main axis matches with the next conveyor
-                                if (tile.* == .conveyor and differentMainAxis) {
-                                    tile.conveyor.move_progress = 0.5;
-                                }
-                            }
-                        }
-
-                        self.conveyor.move_progress = 1;
-                    }
-                }
+                //self.conveyor.tick(self, map, position);
             },
             .miner => {
                 self.miner.cooldown -= config.one_tick_in_seconds;
