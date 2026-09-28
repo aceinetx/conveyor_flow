@@ -98,15 +98,18 @@ pub const Tile = union(TileType) {
 
     pub fn tick(self: *Self, map: *Map, position: Vector2i) void {
         inline for (comptime std.meta.fieldNames(Self)) |field| {
-            const ti = @typeInfo(@FieldType(Self, field));
+            const ft = comptime @FieldType(Self, field);
+            const ti = comptime @typeInfo(ft);
             if (ti == .@"struct") {
-                const decls = ti.@"struct".decls;
+                const decls = comptime ti.@"struct".decls;
                 if (!util.declsContainShit(decls, "tick")) {
-                    const x = .{ ti, " must implement tick" };
-                    @compileError(x);
+                    @compileLog(decls);
+                    const sig = "pub fn tick(self: *Self, super: *Tile, map: *Map, position: Vector2i) void";
+                    const s = std.fmt.comptimePrint("{s} must implement `{s}`", .{ @typeName(ft), sig });
+                    @compileError(s);
                 }
 
-                // pub fn tick(self: *Self, super: *Tile, map: *Map, position: Vector2i) void
+                //
                 //@compileLog(ti.@"struct".decls);
             }
             if (self.* == @field(Self, field)) {
