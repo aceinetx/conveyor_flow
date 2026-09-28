@@ -104,22 +104,28 @@ pub const Tile = union(TileType) {
                     self.conveyor.move_progress += 0.5 * config.one_tick_in_seconds;
 
                     if (self.conveyor.move_progress >= 1) {
-                        self.conveyor.move_progress = 1;
-
                         // Transfer the item
                         const tile_pos = position.add(self.conveyor.direction.toVector2i());
                         if (map.tiles.getPtr(tile_pos)) |tile| {
+                            const differentMainAxis =
+                                if (tile.* == .conveyor)
+                                    self.conveyor.direction.isVertical() != tile.conveyor.direction.isVertical()
+                                else
+                                    false;
+                            if (differentMainAxis and self.conveyor.move_progress < 1.5)
+                                return;
+
                             if (tile.acceptItem(item)) {
                                 self.conveyor.item = null;
 
                                 // Make it so that the element's main axis matches with the next conveyor
-                                if (tile.* == .conveyor and
-                                    self.conveyor.direction.isVertical() != tile.conveyor.direction.isVertical())
-                                {
+                                if (tile.* == .conveyor and differentMainAxis) {
                                     tile.conveyor.move_progress = 0.5;
                                 }
                             }
                         }
+
+                        self.conveyor.move_progress = 1;
                     }
                 }
             },
