@@ -54,14 +54,3 @@ pub inline fn unionFromTag(UnionT: type, TagT: type, tag: u8) UnionT {
     }
     return x;
 }
-
-pub fn declsContainShit(comptime decls: []const std.builtin.Type.Declaration, comptime name: [:0]const u8) bool {
-    inline for (decls) |decl| {
-        @compileLog(.{ name, decl.name });
-        if (std.mem.eql(u8, decl.name, name)) {
-            @compileLog("ok");
-            return true;
-        }
-    }
-    return false;
-}

@@ -97,30 +97,10 @@ pub const Tile = union(TileType) {
     // ----------------------------------------------------------
 
     pub fn tick(self: *Self, map: *Map, position: Vector2i) void {
-        inline for (comptime std.meta.fieldNames(Self)) |field| {
-            const ft = comptime @FieldType(Self, field);
-            const ti = comptime @typeInfo(ft);
-            if (ti == .@"struct") {
-                const decls = comptime ti.@"struct".decls;
-                if (!util.declsContainShit(decls, "tick")) {
-                    @compileLog(decls);
-                    const sig = "pub fn tick(self: *Self, super: *Tile, map: *Map, position: Vector2i) void";
-                    const s = std.fmt.comptimePrint("{s} must implement `{s}`", .{ @typeName(ft), sig });
-                    @compileError(s);
-                }
-
-                //
-                //@compileLog(ti.@"struct".decls);
-            }
-            if (self.* == @field(Self, field)) {
-                std.log.debug("{s}", .{field});
-            }
-        }
-
         switch (self.*) {
             .stone => {},
             .conveyor => {
-                //self.conveyor.tick(self, map, position);
+                self.conveyor.tick(self, map, position);
             },
             .miner => {
                 self.miner.cooldown -= config.one_tick_in_seconds;
