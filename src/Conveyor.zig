@@ -3,6 +3,8 @@ const std = @import("std");
 const Vector2i = @import("Vector2i.zig");
 const rl = @import("raylib");
 const Item = @import("item.zig").Item;
+const Tile = @import("tile.zig").Tile;
+const Map = @import("Map.zig");
 const Direction = @import("direction.zig").Direction;
 
 const Self = @This();

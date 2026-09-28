@@ -112,7 +112,10 @@ pub const Tile = union(TileType) {
                                     self.conveyor.direction.isVertical() != tile.conveyor.direction.isVertical()
                                 else
                                     false;
-                            if (differentMainAxis and self.conveyor.move_progress < 1.5)
+
+                            // Prevent jitter when moving between different axised conveyors
+                            // Snaps the element in place to the next conveyor
+                            if (differentMainAxis and self.conveyor.move_progress < 1.5 and tile.conveyor.item == null)
                                 return;
 
                             if (tile.acceptItem(item)) {
