@@ -127,6 +127,8 @@ pub const Tile = union(TileType) {
                 self.miner.cooldown -= config.one_tick_in_seconds;
 
                 if (self.miner.cooldown <= 0) {
+                    self.miner.cooldown = 0;
+
                     const surrounding_positions = [_]Vector2i{
                         .{
                             .x = position.x,
@@ -158,12 +160,14 @@ pub const Tile = union(TileType) {
                                 const item = Item{
                                     .kind = .stone,
                                 };
-                                if (tile.acceptItem(item)) break;
+                                if (tile.acceptItem(item)) {
+                                    // Success
+                                    self.miner.cooldown = self.miner.base_cooldown;
+                                    break;
+                                }
                             }
                         }
                     }
-
-                    self.miner.cooldown = self.miner.base_cooldown;
                 }
             },
             .collector => {},
