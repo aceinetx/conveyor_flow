@@ -1,10 +1,10 @@
-const Map = @import("../Map.zig");
-const rl = @import("raylib");
+const Item = @import("../item.zig").Item;
 const Tile = @import("../tile.zig").Tile;
+const Map = @import("../Map.zig");
+const Textures = @import("../Textures.zig");
 const Vector2i = @import("../Vector2i.zig");
 const config = @import("../config.zig");
-const Item = @import("../item.zig").Item;
-const Textures = @import("../Textures.zig");
+const rl = @import("raylib");
 
 pub const Miner = extern struct {
     const Self = @This();

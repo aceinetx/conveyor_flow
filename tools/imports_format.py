@@ -21,7 +21,7 @@ def groups_to_zig_code(groups: List[str]) -> str:
         return f'const {groups[0]} = @import("{groups[1]}").{groups[2]};'
 
 for file in find_all_srcs():
-    print(file)
+    print(f"{file}... ", end="", flush=True)
 
     lines: List[str] = []
 
@@ -39,6 +39,7 @@ for file in find_all_srcs():
     reg = re.compile(r"const (\w+) = @import\(\"(.+)\"\)(?:\.(\w+))?;")
     lines_trimmed = trim_after_element(lines, "")
     if lines_trimmed == lines:
+        print("no imports")
         continue
 
     imports: List[List[str]] = list(
@@ -89,5 +90,11 @@ for file in find_all_srcs():
 
     final_code = "\n".join(all_imports_code) + "\n\n" + "\n".join(trim_before_element(lines, ""))
 
+    if final_code == "\n".join(lines):
+        print("nothing changed")
+        continue
+
     with open(file, "w") as f:
         f.write(final_code)
+
+    print("ok")

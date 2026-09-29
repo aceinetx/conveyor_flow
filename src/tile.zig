@@ -3,10 +3,10 @@ const Map = @import("Map.zig");
 const Textures = @import("Textures.zig");
 const Vector2i = @import("Vector2i.zig");
 const config = @import("config.zig");
+const tiles = @import("tiles.zig");
 const util = @import("util.zig");
 const rl = @import("raylib");
 const std = @import("std");
-const tiles = @import("tiles.zig");
 
 const TileType = enum(u8) {
     stone,
@@ -168,4 +168,3 @@ pub const Tile = union(TileType) {
         }
     }
 };
-

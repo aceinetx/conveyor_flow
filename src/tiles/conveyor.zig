@@ -1,13 +1,13 @@
-const util = @import("../util.zig");
-const Textures = @import("../Textures.zig");
-const config = @import("../config.zig");
-const std = @import("std");
-const Vector2i = @import("../Vector2i.zig");
-const rl = @import("raylib");
+const Direction = @import("../direction.zig").Direction;
 const Item = @import("../item.zig").Item;
 const Tile = @import("../tile.zig").Tile;
 const Map = @import("../Map.zig");
-const Direction = @import("../direction.zig").Direction;
+const Textures = @import("../Textures.zig");
+const Vector2i = @import("../Vector2i.zig");
+const config = @import("../config.zig");
+const util = @import("../util.zig");
+const rl = @import("raylib");
+const std = @import("std");
 
 pub const Conveyor = struct {
     const Self = @This();
