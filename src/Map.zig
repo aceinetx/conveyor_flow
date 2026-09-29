@@ -1,9 +1,9 @@
-const std = @import("std");
-const rl = @import("raylib");
-const Vector2i = @import("Vector2i.zig");
-const Tile = @import("tile.zig").Tile;
 const Item = @import("item.zig").Item;
+const Tile = @import("tile.zig").Tile;
 const Textures = @import("Textures.zig");
+const Vector2i = @import("Vector2i.zig");
+const rl = @import("raylib");
+const std = @import("std");
 
 const Self = @This();
 

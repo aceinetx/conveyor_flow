@@ -1,6 +1,6 @@
+const util = @import("util.zig");
 const rl = @import("raylib");
 const std = @import("std");
-const util = @import("util.zig");
 
 const Self = @This();
 

@@ -1,11 +1,11 @@
-const rl = @import("raylib");
-const util = @import("util.zig");
-const std = @import("std");
-const config = @import("config.zig");
-const Map = @import("Map.zig");
 const Tile = @import("tile.zig").Tile;
+const Map = @import("Map.zig");
 const Textures = @import("Textures.zig");
 const Vector2i = @import("Vector2i.zig");
+const config = @import("config.zig");
+const util = @import("util.zig");
+const rl = @import("raylib");
+const std = @import("std");
 
 pub fn main(init: std.process.Init) void {
     rl.initWindow(1280, 720, "Conveyor flow");

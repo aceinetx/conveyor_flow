@@ -1,8 +1,8 @@
+const Textures = @import("Textures.zig");
+const Vector2i = @import("Vector2i.zig");
+const util = @import("util.zig");
 const rl = @import("raylib");
 const std = @import("std");
-const util = @import("util.zig");
-const Vector2i = @import("Vector2i.zig");
-const Textures = @import("Textures.zig");
 
 pub const ItemType = enum(u8) {
     stone,
