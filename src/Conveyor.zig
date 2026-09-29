@@ -5,6 +5,7 @@ const Map = @import("Map.zig");
 const Vector2i = @import("Vector2i.zig");
 const util = @import("util.zig");
 const std = @import("std");
+const rl = @import("raylib");
 
 const Self = @This();
 
@@ -35,3 +36,4 @@ pub fn deserialize(reader: *std.Io.Reader) !Self {
 
     return self;
 }
+

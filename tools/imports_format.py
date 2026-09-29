@@ -21,6 +21,7 @@ def groups_to_zig_code(groups: List[str]) -> str:
         return f'const {groups[0]} = @import("{groups[1]}").{groups[2]};'
 
 for file in find_all_srcs():
+    if str(file).count("Conveyor") == 0: continue
     print(file)
 
     lines: List[str] = []
@@ -65,7 +66,7 @@ for file in find_all_srcs():
     imports_modules: List[List[str]] = list(
         filter(
             lambda x: 
-                x[1].count(x[0]) > 0 and x[0][0].islower() and x[1].count(".zig") == 0, 
+                x[0][0].islower() and x[1].count(".zig") == 0, 
             imports
         )
     )
@@ -74,7 +75,7 @@ for file in find_all_srcs():
     imports_files: List[List[str]] = list(
         filter(
             lambda x: 
-                x[1].count(x[0]) > 0 and x[0][0].islower() and x[1].count(".zig") > 0, 
+                x[0][0].islower() and x[1].count(".zig") > 0, 
             imports
         )
     )
@@ -85,7 +86,8 @@ for file in find_all_srcs():
 
     final_code = "\n".join(all_imports_code) + "\n\n" + "\n".join(trim_before_element(lines, ""))
 
-    with open(file, "w") as f:
-        f.write(final_code)
+    print(final_code)
+    #with open(file, "w") as f:
+        #f.write(final_code)
 
     break
