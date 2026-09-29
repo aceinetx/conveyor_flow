@@ -10,6 +10,7 @@ stone: rl.Texture2D,
 stone_item: rl.Texture2D,
 miner: rl.Texture2D,
 collector: rl.Texture2D,
+distributor: rl.Texture2D,
 
 pub fn init() Self {
     return .{
@@ -19,6 +20,7 @@ pub fn init() Self {
         .stone_item = util.loadTextureFromImageInMemory(@embedFile("assets/stone_item.png")),
         .miner = util.loadTextureFromImageInMemory(@embedFile("assets/miner.png")),
         .collector = util.loadTextureFromImageInMemory(@embedFile("assets/collector.png")),
+        .distributor = util.loadTextureFromImageInMemory(@embedFile("assets/distributor.png")),
     };
 }
 
@@ -27,3 +29,4 @@ pub fn deinit(self: *Self) void {
         rl.unloadTexture(@field(self, field.name));
     }
 }
+

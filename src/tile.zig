@@ -13,6 +13,7 @@ const TileType = enum(u8) {
     conveyor,
     miner,
     collector,
+    distributor,
 };
 
 pub const Tile = union(TileType) {
@@ -22,6 +23,7 @@ pub const Tile = union(TileType) {
     conveyor: tiles.Conveyor,
     miner: tiles.Miner,
     collector,
+    distributor: tiles.Distributor,
 
     // ----------------------------------------------------------
 
@@ -33,6 +35,9 @@ pub const Tile = union(TileType) {
             },
             .miner => |miner| {
                 try writer.writeStruct(miner, .little);
+            },
+            .distributor => |distributor| {
+                try distributor.serialize(writer);
             },
             else => {},
         }
@@ -47,6 +52,9 @@ pub const Tile = union(TileType) {
             },
             .miner => {
                 self.miner = try reader.takeStruct(@TypeOf(self.miner), .little);
+            },
+            .distributor => {
+                self.distributor = try tiles.Distributor.deserialize(reader);
             },
             else => {},
         }
@@ -100,6 +108,9 @@ pub const Tile = union(TileType) {
             },
             .miner => {
                 self.miner.tick(self, map, position);
+            },
+            .distributor => {
+                self.distributor.tick(self, map, position);
             },
             .collector => {},
         }
@@ -156,6 +167,9 @@ pub const Tile = union(TileType) {
                     .white,
                 );
             },
+            .distributor => |distributor| {
+                distributor.draw(self, position, textures);
+            },
         }
     }
 
@@ -168,4 +182,3 @@ pub const Tile = union(TileType) {
         }
     }
 };
-
