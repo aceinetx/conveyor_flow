@@ -1,4 +1,3 @@
-const Item = @import("item.zig").Item;
 const Conveyor = @import("Conveyor.zig");
 const Map = @import("Map.zig");
 const Textures = @import("Textures.zig");
@@ -7,6 +6,7 @@ const config = @import("config.zig");
 const util = @import("util.zig");
 const rl = @import("raylib");
 const std = @import("std");
+const tiles = @import("tiles.zig");
 
 const TileType = enum(u8) {
     stone,
@@ -19,12 +19,8 @@ pub const Tile = union(TileType) {
     const Self = @This();
 
     stone,
-    conveyor: Conveyor,
-    miner: extern struct {
-        base_cooldown: f32 = 10.0,
-
-        cooldown: f32 = 0.0,
-    },
+    conveyor: tiles.Conveyor,
+    miner: tiles.Miner,
     collector,
 
     // ----------------------------------------------------------
@@ -47,7 +43,7 @@ pub const Tile = union(TileType) {
 
         switch (self) {
             .conveyor => {
-                self.conveyor = try Conveyor.deserialize(reader);
+                self.conveyor = try tiles.Conveyor.deserialize(reader);
             },
             .miner => {
                 self.miner = try reader.takeStruct(@TypeOf(self.miner), .little);
@@ -76,7 +72,7 @@ pub const Tile = union(TileType) {
 
     // ----------------------------------------------------------
 
-    fn acceptItem(self: *Self, item: Item) bool {
+    pub fn acceptItem(self: *Self, item: Item) bool {
         switch (self.*) {
             .conveyor => {
                 if (self.conveyor.item == null) {
@@ -100,84 +96,10 @@ pub const Tile = union(TileType) {
         switch (self.*) {
             .stone => {},
             .conveyor => {
-                if (self.conveyor.item) |item| {
-                    self.conveyor.move_progress += 0.5 * config.one_tick_in_seconds;
-
-                    if (self.conveyor.move_progress >= 1) {
-                        // Transfer the item
-                        const tile_pos = position.add(self.conveyor.direction.toVector2i());
-                        if (map.tiles.getPtr(tile_pos)) |tile| {
-                            const differentMainAxis =
-                                if (tile.* == .conveyor)
-                                    self.conveyor.direction.isVertical() != tile.conveyor.direction.isVertical()
-                                else
-                                    false;
-
-                            // Prevent jitter when moving between different axised conveyors
-                            // Snaps the element in place to the next conveyor
-                            if (differentMainAxis and self.conveyor.move_progress < 1.5 and tile.conveyor.item == null)
-                                return;
-
-                            if (tile.acceptItem(item)) {
-                                self.conveyor.item = null;
-
-                                // Make it so that the element's main axis matches with the next conveyor
-                                if (tile.* == .conveyor and differentMainAxis) {
-                                    tile.conveyor.move_progress = 0.5;
-                                }
-                            }
-                        }
-
-                        self.conveyor.move_progress = 1;
-                    }
-                }
+                self.conveyor.tick(self, map, position);
             },
             .miner => {
-                self.miner.cooldown -= config.one_tick_in_seconds;
-
-                if (self.miner.cooldown <= 0) {
-                    self.miner.cooldown = 0;
-
-                    const surrounding_positions = [_]Vector2i{
-                        .{
-                            .x = position.x,
-                            .y = position.y - 1,
-                        },
-                        .{
-                            .x = position.x - 1,
-                            .y = position.y,
-                        },
-                        .{
-                            .x = position.x,
-                            .y = position.y + 1,
-                        },
-                        .{
-                            .x = position.x + 1,
-                            .y = position.y,
-                        },
-                    };
-
-                    const has_source = for (surrounding_positions) |pos| {
-                        if (map.tiles.get(pos)) |tile| {
-                            if (tile == .stone) break true;
-                        }
-                    } else false;
-
-                    if (has_source) {
-                        for (surrounding_positions) |item_position| {
-                            if (map.tiles.getPtr(item_position)) |tile| {
-                                const item = Item{
-                                    .kind = .stone,
-                                };
-                                if (tile.acceptItem(item)) {
-                                    // Success
-                                    self.miner.cooldown = self.miner.base_cooldown;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+                self.miner.tick(self, map, position);
             },
             .collector => {},
         }
@@ -185,13 +107,17 @@ pub const Tile = union(TileType) {
 
     // ----------------------------------------------------------
 
-    pub fn draw(self: Self, position: Vector2i, textures: *Textures) void {
-        const rec = rl.Rectangle{
+    pub inline fn getRectangle(position: Vector2i) rl.Rectangle {
+        return rl.Rectangle{
             .x = @floatFromInt(position.x * 32),
             .y = @floatFromInt(position.y * 32),
             .width = 32,
             .height = 32,
         };
+    }
+
+    pub fn draw(self: Self, position: Vector2i, textures: *Textures) void {
+        const rec = Self.getRectangle(position);
 
         switch (self) {
             .stone => {
@@ -210,46 +136,10 @@ pub const Tile = union(TileType) {
                 );
             },
             .conveyor => |conveyor| {
-                const rotation: f32 = switch (conveyor.direction) {
-                    .up => -90,
-                    .down => 90,
-                    .left => 180,
-                    .right => 0,
-                };
-
-                rl.drawTexturePro(
-                    textures.conveyor,
-                    .{
-                        .x = 0,
-                        .y = 0,
-                        .width = 32,
-                        .height = 32,
-                    },
-                    .{
-                        .x = rec.x + 16,
-                        .y = rec.y + 16,
-                        .width = rec.width,
-                        .height = rec.height,
-                    },
-                    .init(rec.width / 2, rec.height / 2),
-                    rotation,
-                    .white,
-                );
+                conveyor.draw(self, position, textures);
             },
-            .miner => {
-                rl.drawTexturePro(
-                    textures.miner,
-                    .{
-                        .x = 0,
-                        .y = 0,
-                        .width = 32,
-                        .height = 32,
-                    },
-                    rec,
-                    .zero(),
-                    0.0,
-                    .white,
-                );
+            .miner => |miner| {
+                miner.draw(self, position, textures);
             },
             .collector => {
                 rl.drawTexturePro(
@@ -270,39 +160,12 @@ pub const Tile = union(TileType) {
     }
 
     pub fn drawPost(self: Self, position: Vector2i, textures: *Textures) void {
-        const rec = rl.Rectangle{
-            .x = @floatFromInt(position.x * 32),
-            .y = @floatFromInt(position.y * 32),
-            .width = 32,
-            .height = 32,
-        };
-
         switch (self) {
             .conveyor => |conveyor| {
-                if (conveyor.item) |item| {
-                    const pos: rl.Vector2 = switch (conveyor.direction) {
-                        .up => .init(
-                            rec.x + 16,
-                            rec.y + (32.0 * (1.0 - conveyor.move_progress)),
-                        ),
-                        .down => .init(
-                            rec.x + 16,
-                            rec.y + (32.0 * (conveyor.move_progress)),
-                        ),
-                        .left => .init(
-                            rec.x + (32.0 * (1.0 - conveyor.move_progress)),
-                            rec.y + 16,
-                        ),
-                        .right => .init(
-                            rec.x + (32.0 * (conveyor.move_progress)),
-                            rec.y + 16,
-                        ),
-                    };
-
-                    item.draw(pos, textures);
-                }
+                conveyor.drawPost(self, position, textures);
             },
             else => {},
         }
     }
 };
+
