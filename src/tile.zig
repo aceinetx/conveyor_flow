@@ -1,3 +1,4 @@
+const Item = @import("item.zig").Item;
 const Conveyor = @import("Conveyor.zig");
 const Map = @import("Map.zig");
 const Textures = @import("Textures.zig");
