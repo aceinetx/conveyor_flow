@@ -64,7 +64,7 @@ pub const Conveyor = struct {
                     if (differentMainAxis and self.move_progress < 1.5 and tile.conveyor.item == null)
                         return;
 
-                    if (tile.acceptItem(item)) {
+                    if (tile.acceptItem(map, item)) {
                         self.item = null;
 
                         // Make it so that the element's main axis matches with the next conveyor
@@ -140,4 +140,3 @@ pub const Conveyor = struct {
         }
     }
 };
-

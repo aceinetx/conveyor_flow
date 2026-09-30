@@ -52,7 +52,7 @@ pub const Miner = extern struct {
                         const item = Item{
                             .kind = .stone,
                         };
-                        if (tile.acceptItem(item)) {
+                        if (tile.acceptItem(map, item)) {
                             // Success
                             self.cooldown = self.base_cooldown;
                             break;
@@ -88,3 +88,4 @@ pub const Miner = extern struct {
         );
     }
 };
+

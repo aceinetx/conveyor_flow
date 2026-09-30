@@ -80,7 +80,7 @@ pub const Tile = union(TileType) {
 
     // ----------------------------------------------------------
 
-    pub fn acceptItem(self: *Self, item: Item) bool {
+    pub fn acceptItem(self: *Self, map: *Map, item: Item) bool {
         switch (self.*) {
             .conveyor => {
                 if (self.conveyor.item == null) {
@@ -92,6 +92,9 @@ pub const Tile = union(TileType) {
             },
             .collector => {
                 return true;
+            },
+            .distributor => {
+                return self.distributor.acceptItem(self, map, item);
             },
             else => {},
         }
